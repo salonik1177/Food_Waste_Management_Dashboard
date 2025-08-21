@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="food_waste.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1290"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="claims" custom_title="0" dock_id="1" table="4,6:mainclaims"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011300ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="1. Number of food providers in each city*">
+SELECT City, COUNT(*) AS total_providers
+FROM providers
+GROUP BY City;
+</sql><sql name="2. Number of receivers in each city*">SELECT City, COUNT(*) AS total_receivers
+FROM receivers
+GROUP BY City;
+</sql><sql name="3. Provider type contributing the most food*">SELECT Provider_Type, SUM(Quantity) AS total_quantity
+FROM food_listings
+GROUP BY Provider_Type
+ORDER BY total_quantity DESC
+LIMIT 1;
+</sql><sql name="4. Contact info of providers in a specific city*">SELECT Name, Contact
+FROM providers
+WHERE City = 'South Robert';
+</sql><sql name="5. Receivers who have claimed the most food*">SELECT r.Name, COUNT(c.Claim_ID) AS total_claims
+FROM claims c
+JOIN receivers r ON c.Receiver_ID = r.Receiver_ID
+GROUP BY r.Name
+ORDER BY total_claims DESC;
+</sql><sql name="6. Total quantity of food available*">SELECT SUM(Quantity) AS total_food_quantity
+FROM food_listings;
+</sql><sql name="7. City with the highest number of food listings*">SELECT Location, COUNT(*) AS total_listings
+FROM food_listings
+GROUP BY Location
+ORDER BY total_listings DESC
+LIMIT 1;
+</sql><sql name="8. Most commonly available food types*">SELECT Food_Type, COUNT(*) AS total_count
+FROM food_listings
+GROUP BY Food_Type
+ORDER BY total_count DESC;
+</sql><sql name="9. Number of claims for each food item*">SELECT f.Food_Name, COUNT(c.Claim_ID) AS total_claims
+FROM claims c
+JOIN food_listings f ON c.Food_ID = f.Food_ID
+GROUP BY f.Food_Name
+ORDER BY total_claims DESC;
+</sql><sql name="10. Provider with highest successful claims*">SELECT p.Name, COUNT(c.Claim_ID) AS successful_claims
+FROM claims c
+JOIN food_listings f ON c.Food_ID = f.Food_ID
+JOIN providers p ON f.Provider_ID = p.Provider_ID
+WHERE c.Status = 'Completed'
+GROUP BY p.Name
+ORDER BY successful_claims DESC
+LIMIT 1;
+</sql><sql name="11. Percentage of claims by status*">SELECT Status,
+       ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM claims), 2) AS percentage
+FROM claims
+GROUP BY Status;
+</sql><sql name="12. Average quantity of food claimed per receiver*">SELECT r.Name, ROUND(AVG(f.Quantity), 2) AS avg_quantity_claimed
+FROM claims c
+JOIN receivers r ON c.Receiver_ID = r.Receiver_ID
+JOIN food_listings f ON c.Food_ID = f.Food_ID
+GROUP BY r.Name;
+</sql><sql name="13. Most claimed meal type*">SELECT Meal_Type, COUNT(*) AS total_claims
+FROM claims c
+JOIN food_listings f ON c.Food_ID = f.Food_ID
+GROUP BY Meal_Type
+ORDER BY total_claims DESC
+LIMIT 1;
+</sql><sql name="14. Total food donated by each provider*">SELECT p.Name, SUM(f.Quantity) AS total_donated
+FROM food_listings f
+JOIN providers p ON f.Provider_ID = p.Provider_ID
+GROUP BY p.Name
+ORDER BY total_donated DESC;
+</sql><sql name="15. Claims per city*">SELECT f.Location, COUNT(c.Claim_ID) AS total_claims
+FROM claims c
+JOIN food_listings f ON c.Food_ID = f.Food_ID
+GROUP BY f.Location
+ORDER BY total_claims DESC;
+</sql><current_tab id="14"/></tab_sql></sqlb_project>
